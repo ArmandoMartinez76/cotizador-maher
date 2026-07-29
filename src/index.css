@@ -15,32 +15,57 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-  background-color: #070d19;
+  background: radial-gradient(circle at 50% 0%, #111d33 0%, #060c18 70%);
   color: #f3f4f6;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* Scrollbar customization */
+/* Glassmorphism Cards */
+.glass-panel {
+  background: rgba(15, 25, 44, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(11, 19, 35, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b1424;
+  background: #060c18;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2b3a55;
+  background: #1e2f4a;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b4d6e;
+  background: #2a4167;
 }
 
-/* PRINT ENGINE - EXACT COLOUR PRESERVATION & STRICT SINGLE PAGE OUTPUT */
+/* Touch Friendly Input Styles */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+@media (min-width: 640px) {
+  input, select, textarea {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* PRINT ENGINE - STRICT SINGLE PAGE OUTPUT */
 @media print {
   * {
     -webkit-print-color-adjust: exact !important;
@@ -49,7 +74,7 @@ body {
   }
 
   html, body {
-    background-color: white !important;
+    background: white !important;
     color: black !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -57,7 +82,7 @@ body {
     overflow: visible !important;
   }
 
-  .no-print, header, nav, footer, .modal-overlay, main > div:first-child {
+  .no-print, header, nav, footer, .modal-overlay, main > div:first-child, .mobile-tab-bar {
     display: none !important;
     height: 0 !important;
     margin: 0 !important;
