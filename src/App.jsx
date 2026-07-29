@@ -6,7 +6,7 @@ import QuoteDocumentView from './components/QuoteDocumentView';
 import HistoryModal from './components/HistoryModal';
 import NetlifyGuideModal from './components/NetlifyGuideModal';
 import { DEFAULT_QUOTE } from './data/presets';
-import { Edit3, Eye, Download, Share2 } from 'lucide-react';
+import { Download, Share2, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function App() {
   const [quote, setQuote] = useState(() => {
@@ -172,9 +172,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060c18] text-gray-100 flex flex-col font-sans selection:bg-[#E5A900] selection:text-[#0F1E36]">
+    <div className="min-h-screen text-slate-100 flex flex-col font-sans selection:bg-[#E5A900] selection:text-[#0F1E36]">
       
-      {/* Top Navbar */}
+      {/* Top Navigation Bar */}
       <HeaderNav
         onNewQuote={handleNewQuote}
         onResetExample={handleResetExample}
@@ -184,68 +184,42 @@ export default function App() {
         onShareWhatsApp={handleShareWhatsApp}
         onPrint={handlePrint}
         savedCount={savedQuotes.length}
+        mobileTab={mobileTab}
+        setMobileTab={setMobileTab}
       />
 
-      {/* Mobile Mode Switcher (Visible only on screens below lg breakpoint) */}
-      <div className="no-print lg:hidden p-2 bg-[#091122]/90 border-b border-white/10 sticky top-[53px] z-30 backdrop-blur-md">
-        <div className="max-w-md mx-auto grid grid-cols-2 gap-1.5 p-1 bg-slate-900/80 rounded-xl border border-slate-800">
-          <button
-            type="button"
-            onClick={() => setMobileTab('editor')}
-            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition cursor-pointer ${
-              mobileTab === 'editor'
-                ? 'bg-gradient-to-r from-[#172b4c] to-[#0F1E36] text-[#E5A900] shadow border border-[#E5A900]/40'
-                : 'text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <Edit3 className="w-4 h-4 text-[#E5A900]" />
-            <span>Editar Cotización</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setMobileTab('preview')}
-            className={`flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition cursor-pointer ${
-              mobileTab === 'preview'
-                ? 'bg-gradient-to-r from-[#172b4c] to-[#0F1E36] text-[#E5A900] shadow border border-[#E5A900]/40'
-                : 'text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <Eye className="w-4 h-4 text-cyan-400" />
-            <span>Ver Hoja PDF (1:1)</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Responsive Grid Workspace */}
-      <main className="flex-1 p-2 sm:p-4 max-w-[1800px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-4 pb-20 lg:pb-4">
+      {/* Main Workspace Area */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1750px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-32 lg:pb-12">
         
-        {/* Left Column: Form Editor */}
-        <div className={`no-print lg:col-span-5 xl:col-span-4 h-full ${mobileTab === 'editor' ? 'block' : 'hidden lg:block'}`}>
+        {/* Left Column: Form Editor Stepper */}
+        <div className={`no-print lg:col-span-6 xl:col-span-5 ${mobileTab === 'editor' ? 'block' : 'hidden lg:block'}`}>
           <QuoteFormEditor quote={quote} setQuote={setQuote} />
         </div>
 
-        {/* Right Column: PDF Replica Document View */}
-        <div className={`lg:col-span-7 xl:col-span-8 flex flex-col items-center w-full ${mobileTab === 'preview' ? 'block' : 'hidden lg:block'}`}>
-          <div className="no-print w-full flex items-center justify-between glass-card border border-white/10 px-4 py-2 rounded-xl mb-3 shadow-lg">
-            <span className="text-xs text-gray-300 font-semibold flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-              Vista Previa 1:1 de Cotización Impresa
+        {/* Right Column: PDF Document Preview Canvas */}
+        <div className={`lg:col-span-6 xl:col-span-7 flex flex-col items-center w-full ${mobileTab === 'preview' ? 'block' : 'hidden lg:block'}`}>
+          <div className="no-print w-full flex items-center justify-between glass-card-master px-5 py-3 rounded-2xl mb-4 shadow-xl border border-white/10">
+            <span className="text-xs sm:text-sm text-slate-200 font-extrabold flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50"></span>
+              Vista Previa Vectorial 1:1 en Tiempo Real
             </span>
-            <span className="text-[11px] text-[#E5A900] bg-[#1a2d4d] px-2.5 py-0.5 rounded-full border border-[#E5A900]/30 font-bold">
-              Vectorial A4 / PDF
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[#E5A900] bg-[#172b4c] px-3 py-1 rounded-full border border-[#E5A900]/40 font-black flex items-center gap-1.5 shadow">
+                <Sparkles className="w-3.5 h-3.5 text-[#E5A900]" />
+                Standard A4 PDF
+              </span>
+            </div>
           </div>
 
           <QuoteDocumentView quote={quote} documentRef={documentRef} />
         </div>
       </main>
 
-      {/* Floating Action Bar for Mobile View */}
-      <div className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#091122]/95 backdrop-blur-md border-t border-white/10 p-2.5 px-4 flex items-center justify-between shadow-2xl">
+      {/* Bottom Floating Command Dock for Smartphones */}
+      <div className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#050b18]/95 backdrop-blur-2xl border-t border-white/10 p-3 px-5 flex items-center justify-between shadow-2xl">
         <div className="text-left">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Total</span>
-          <span className="text-sm font-black text-emerald-400 font-mono">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Total Cotizado</span>
+          <span className="text-base font-black text-emerald-400 font-mono">
             {new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(total)}
           </span>
         </div>
@@ -254,7 +228,7 @@ export default function App() {
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="flex items-center gap-1 px-3 py-2 bg-[#128C7E] text-white text-xs font-bold rounded-xl shadow cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-[#128C7E] text-white text-xs font-bold rounded-2xl shadow active:scale-95 transition cursor-pointer"
           >
             <Share2 className="w-4 h-4" />
             <span>WhatsApp</span>
@@ -263,7 +237,7 @@ export default function App() {
           <button
             type="button"
             onClick={handleDownloadPDF}
-            className="flex items-center gap-1 px-3.5 py-2 bg-[#E5A900] text-[#0F1E36] text-xs font-black rounded-xl shadow cursor-pointer active:scale-95"
+            className="flex items-center gap-1.5 px-4 py-2.5 bg-[#E5A900] text-[#050913] text-xs font-black rounded-2xl shadow-lg active:scale-95 transition cursor-pointer"
           >
             <Download className="w-4 h-4" />
             <span>Descargar PDF</span>
@@ -287,13 +261,13 @@ export default function App() {
         onClose={() => setIsNetlifyOpen(false)}
       />
 
-      {/* PDF Loading Toast Overlay */}
+      {/* PDF Generation Toast Modal */}
       {isGeneratingPDF && (
-        <div className="no-print fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center">
-          <div className="bg-[#0f192c] border border-[#E5A900] p-6 rounded-2xl shadow-2xl flex flex-col items-center space-y-3">
-            <div className="w-10 h-10 border-4 border-[#E5A900] border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-white font-bold text-sm">Generando PDF de Alta Calidad...</p>
-            <p className="text-xs text-gray-400">Descargando archivo directamente...</p>
+        <div className="no-print fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center">
+          <div className="bg-[#091428] border border-[#E5A900] p-7 rounded-3xl shadow-2xl flex flex-col items-center space-y-4 max-w-xs text-center">
+            <div className="w-12 h-12 border-4 border-[#E5A900] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-white font-extrabold text-base">Generando PDF de Alta Resolución...</p>
+            <p className="text-xs text-slate-400 leading-relaxed">Procesando vectores 1:1. El archivo se descargará automáticamente.</p>
           </div>
         </div>
       )}

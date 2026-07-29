@@ -2,13 +2,12 @@
 
 :root {
   --navy-primary: #091A33;
-  --navy-dark: #061124;
-  --accent-yellow: #E5A900;
-  --gray-card: #EEF2F7;
-  --gray-border: #CBD5E1;
+  --navy-dark: #030712;
+  --accent-gold: #E5A900;
+  --accent-gold-glow: rgba(229, 169, 0, 0.2);
   
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: dark light;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
 }
 
 * {
@@ -19,23 +18,66 @@
 }
 
 body {
-  background: radial-gradient(circle at 50% 0%, #111d33 0%, #060c18 70%);
-  color: #f3f4f6;
+  background-color: #030712;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(229, 169, 0, 0.12) 0px, transparent 45%),
+    radial-gradient(at 100% 0%, rgba(6, 182, 212, 0.1) 0px, transparent 45%),
+    radial-gradient(at 50% 50%, rgba(16, 185, 129, 0.04) 0px, transparent 60%),
+    radial-gradient(at 50% 100%, rgba(15, 30, 54, 0.7) 0px, transparent 70%);
+  background-attachment: fixed;
+  color: #f8fafc;
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* Glassmorphism Cards */
-.glass-panel {
-  background: rgba(15, 25, 44, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Masterpiece Glass Panel */
+.glass-panel-master {
+  background: linear-gradient(135deg, rgba(13, 22, 41, 0.85) 0%, rgba(6, 12, 24, 0.9) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.05) inset;
 }
 
-.glass-card {
-  background: rgba(11, 19, 35, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+/* Masterpiece Card */
+.glass-card-master {
+  background: rgba(15, 26, 48, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-master:hover {
+  border-color: rgba(229, 169, 0, 0.35);
+  background: rgba(18, 31, 56, 0.75);
+  box-shadow: 0 12px 35px -10px rgba(229, 169, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Masterpiece Input Fields */
+.glass-input-master {
+  background: rgba(5, 10, 20, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-input-master:focus {
+  border-color: #E5A900;
+  box-shadow: 0 0 0 4px rgba(229, 169, 0, 0.15), 0 0 15px rgba(229, 169, 0, 0.1);
+  background: rgba(7, 14, 28, 0.95);
+  outline: none;
+}
+
+/* Animated Glowing Border Badge */
+.glow-badge-gold {
+  box-shadow: 0 0 20px rgba(229, 169, 0, 0.25);
+}
+
+.glow-badge-emerald {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25);
 }
 
 /* Custom Scrollbar */
@@ -44,17 +86,17 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #060c18;
+  background: #030712;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e2f4a;
-  border-radius: 4px;
+  background: #1c2d4a;
+  border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2a4167;
+  background: #E5A900;
 }
 
-/* Touch Friendly Input Styles */
+/* Touch Friendly Inputs */
 input, select, textarea {
   font-size: 16px !important;
 }
@@ -62,6 +104,30 @@ input, select, textarea {
 @media (min-width: 640px) {
   input, select, textarea {
     font-size: 0.875rem !important;
+  }
+}
+
+/* Mobile Paper Viewer Auto-Fit Scaling */
+@media (max-width: 768px) {
+  .document-preview-container {
+    padding: 4px !important;
+    overflow-x: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .mobile-paper-scaler {
+    transform: scale(0.48);
+    transform-origin: top center;
+    margin-bottom: -580px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .mobile-paper-scaler {
+    transform: scale(0.75);
+    transform-origin: top center;
+    margin-bottom: -280px;
   }
 }
 
@@ -104,6 +170,11 @@ input, select, textarea {
     box-shadow: none !important;
     border: none !important;
     background: white !important;
+  }
+
+  .mobile-paper-scaler {
+    transform: none !important;
+    margin-bottom: 0 !important;
   }
 
   .document-paper {
