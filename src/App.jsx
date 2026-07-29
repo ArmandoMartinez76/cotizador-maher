@@ -1,3 +1,12 @@
+/**
+ * @file App.jsx
+ * @description Componente principal de la aplicación MAHER Pro.
+ * Maneja el estado global de la cotización activa, la persistencia en localStorage,
+ * el control de navegación móvil (Editor vs Preview A4) y la exportación directa a PDF/WhatsApp.
+ * 
+ * @module App
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 import HeaderNav from './components/HeaderNav';
@@ -6,42 +15,59 @@ import QuoteDocumentView from './components/QuoteDocumentView';
 import HistoryModal from './components/HistoryModal';
 import NetlifyGuideModal from './components/NetlifyGuideModal';
 import { DEFAULT_QUOTE } from './data/presets';
-import { Download, Share2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Download, Share2, Sparkles } from 'lucide-react';
 
 export default function App() {
+  /**
+   * Estado de la cotización actual en edición.
+   * Se inicializa recuperando la cotización guardada en localStorage o la plantilla de ejemplo por defecto.
+   */
   const [quote, setQuote] = useState(() => {
     const saved = localStorage.getItem('maher_current_quote');
     return saved ? JSON.parse(saved) : DEFAULT_QUOTE;
   });
 
+  /**
+   * Historial de cotizaciones previamente guardadas por el usuario.
+   */
   const [savedQuotes, setSavedQuotes] = useState(() => {
     const history = localStorage.getItem('maher_saved_quotes_history');
     return history ? JSON.parse(history) : [];
   });
 
-  const [mobileTab, setMobileTab] = useState('editor'); // 'editor' | 'preview'
+  /**
+   * Control de pestaña en vista móvil:
+   * 'editor'  -> Muestra el formulario de edición por pasos.
+   * 'preview' -> Muestra el visor de la hoja física A4 vectorizada.
+   */
+  const [mobileTab, setMobileTab] = useState('editor');
+
+  /** Estados de visibilidad para los modales de la aplicación */
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isNetlifyOpen, setIsNetlifyOpen] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
+  /** Referencia directa al nodo DOM de la hoja A4 para html2canvas */
   const documentRef = useRef(null);
 
-  // Auto-save current state to localStorage
+  // Sincronización automática de la cotización activa con localStorage
   useEffect(() => {
     localStorage.setItem('maher_current_quote', JSON.stringify(quote));
   }, [quote]);
 
-  // Save history to localStorage
+  // Sincronización automática del historial con localStorage
   useEffect(() => {
     localStorage.setItem('maher_saved_quotes_history', JSON.stringify(savedQuotes));
   }, [savedQuotes]);
 
-  // Total calculation for WhatsApp
+  // Cálculo en tiempo real del gran total para envío por WhatsApp
   const subtotal = quote.items.reduce((acc, item) => acc + (parseFloat(item.importe) || 0), 0);
   const tasa = quote.incluirIva ? (parseFloat(quote.tasaIva) || 0) : 0;
   const total = subtotal + subtotal * (tasa / 100);
 
-  // Actions
+  /**
+   * Crea una nueva cotización en blanco con un folio único autogenerado basándose en la fecha actual.
+   */
   const handleNewQuote = () => {
     const now = new Date();
     const dateStr = now.toISOString().slice(2,10).replace(/-/g,'');
@@ -66,10 +92,16 @@ export default function App() {
     setMobileTab('editor');
   };
 
+  /**
+   * Restablece la cotización de ejemplo original (Saveiro 2015).
+   */
   const handleResetExample = () => {
     setQuote(DEFAULT_QUOTE);
   };
 
+  /**
+   * Guarda la cotización actual en el historial de la aplicación.
+   */
   const handleSaveCurrentQuote = () => {
     setSavedQuotes(prev => {
       const filtered = prev.filter(q => q.folio !== quote.folio);
@@ -78,17 +110,28 @@ export default function App() {
     alert(`Cotización ${quote.folio} guardada exitosamente en el historial.`);
   };
 
+  /**
+   * Carga una cotización seleccionada del historial.
+   * @param {Object} loadedQuote - Cotización almacenada.
+   */
   const handleLoadQuote = (loadedQuote) => {
     setQuote(loadedQuote);
     setIsHistoryOpen(false);
   };
 
+  /**
+   * Elimina una cotización específica del historial por su folio.
+   * @param {string} folio - Folio único de la cotización.
+   */
   const handleDeleteQuote = (folio) => {
     if (confirm(`¿Estás seguro de eliminar la cotización ${folio}?`)) {
       setSavedQuotes(prev => prev.filter(q => q.folio !== folio));
     }
   };
 
+  /**
+   * Ejecuta el comando de impresión del navegador.
+   */
   const handlePrint = () => {
     try {
       window.focus();
@@ -101,7 +144,10 @@ export default function App() {
     }
   };
 
-  // Direct PDF Download Handler with Pixel-Perfect 794px A4 Proportions
+  /**
+   * Manejador de descarga directa de PDF sin abrir cuadros de diálogo de impresora.
+   * Cambia temporalmente la vista en móvil a 'preview' para asegurar el renderizado del DOM en html2canvas.
+   */
   const handleDownloadPDF = async () => {
     if (!documentRef.current) {
       alert("No se encontró la hoja de documento para exportar.");
@@ -151,6 +197,9 @@ export default function App() {
     }
   };
 
+  /**
+   * Construye y abre la URL de WhatsApp con el resumen de la cotización.
+   */
   const handleShareWhatsApp = () => {
     const totalFormatted = new Intl.NumberFormat('es-MX', {
       style: 'currency',
@@ -174,7 +223,7 @@ export default function App() {
   return (
     <div className="min-h-screen text-slate-100 flex flex-col font-sans selection:bg-[#E5A900] selection:text-[#0F1E36]">
       
-      {/* Top Navigation Bar */}
+      {/* Barra de navegación superior */}
       <HeaderNav
         onNewQuote={handleNewQuote}
         onResetExample={handleResetExample}
@@ -188,15 +237,15 @@ export default function App() {
         setMobileTab={setMobileTab}
       />
 
-      {/* Main Workspace Area */}
+      {/* Área principal de trabajo */}
       <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1750px] w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-32 lg:pb-12">
         
-        {/* Left Column: Form Editor Stepper */}
+        {/* Columna Izquierda: Formulario Asistido (Stepper Wizard) */}
         <div className={`no-print lg:col-span-6 xl:col-span-5 ${mobileTab === 'editor' ? 'block' : 'hidden lg:block'}`}>
           <QuoteFormEditor quote={quote} setQuote={setQuote} />
         </div>
 
-        {/* Right Column: PDF Document Preview Canvas */}
+        {/* Columna Derecha: Visor de la Hoja A4 Vectorial en Tiempo Real */}
         <div className={`lg:col-span-6 xl:col-span-7 flex flex-col items-center w-full ${mobileTab === 'preview' ? 'block' : 'hidden lg:block'}`}>
           <div className="no-print w-full flex items-center justify-between glass-card-master px-5 py-3 rounded-2xl mb-4 shadow-xl border border-white/10">
             <span className="text-xs sm:text-sm text-slate-200 font-extrabold flex items-center gap-2">
@@ -215,7 +264,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* Bottom Floating Command Dock for Smartphones */}
+      {/* Dock Flotante Inferior de Comandos para Teléfonos Móviles */}
       <div className="no-print lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#050b18]/95 backdrop-blur-2xl border-t border-white/10 p-3 px-5 flex items-center justify-between shadow-2xl">
         <div className="text-left">
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Total Cotizado</span>
@@ -245,7 +294,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Modals */}
+      {/* Modales de Historial y Guía */}
       <HistoryModal
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
@@ -261,7 +310,7 @@ export default function App() {
         onClose={() => setIsNetlifyOpen(false)}
       />
 
-      {/* PDF Generation Toast Modal */}
+      {/* Toast de carga al generar el PDF */}
       {isGeneratingPDF && (
         <div className="no-print fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center">
           <div className="bg-[#091428] border border-[#E5A900] p-7 rounded-3xl shadow-2xl flex flex-col items-center space-y-4 max-w-xs text-center">
